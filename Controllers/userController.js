@@ -38,12 +38,7 @@ const getUserInformation = async (req, res) => {
 };
 
 const createNewUser = async (req, res) => {
-  const { name, email, password, mobile } = req.body;
-
-  // Validate that all required fields are provided
-  if (!name || !email || !password || !mobile) {
-    return res.status(400).json({ error: "all fields must be required!" });
-  }
+  const { name, email, password, phone } = req.body;
 
   // Validate email format
   if (!validator.isEmail(email)) {
@@ -53,10 +48,11 @@ const createNewUser = async (req, res) => {
   try {
     // Check if a user with the provided email already exists
     const existingUser = await User.findOne({ email });
+    console.log(existingUser)
     if (existingUser) {
       return res
-        .status(404)
-        .json({ error: "User with this email already exists" });
+        .status(409)
+        .json({ status: false, message: "email already exists" });
     }
 
     // Hash the password
@@ -67,11 +63,13 @@ const createNewUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      mobile,
+      phone,
     });
     const token = createJwtToken(newUser._id);
     await createCartForEachUser(newUser._id);
-    res.status(201).json({ message: "User created successfully", token });
+    res
+      .status(201)
+      .json({ status: true, message: "User created successfully", token });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -79,11 +77,6 @@ const createNewUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    return res
-      .status(400)
-      .json({ error: "email, and password must be filled" });
-  }
 
   // Validate email format
   if (!validator.isEmail(email)) {
@@ -93,21 +86,21 @@ const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ error: "Invalid email" });
+      return res.status(404).json({ status: false, error: "Invalid email" });
     }
 
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.status(404).json({ error: "Invalid password" });
+      return res.status(404).json({ status: false, error: "Invalid password" });
     }
     // create token
     const token = createJwtToken(user._id);
     return res
       .status(200)
-      .json({ message: "logged in successfully", user, token });
+      .json({ status: true, message: "logged in successfully", user, token });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ status: false, error: error.message });
   }
 };
 
