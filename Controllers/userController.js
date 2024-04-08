@@ -41,14 +41,14 @@ const createNewUser = async (req, res) => {
   const { name, email, password, phone } = req.body;
 
   // Validate email format
-  if (!validator.isEmail(email)) {
-    return res.status(400).json({ error: "Invalid email format" });
-  }
+  // if (!validator.isEmail(email)) {
+  //   return res.status(400).json({ error: "Invalid email format" });
+  // }
 
   try {
     // Check if a user with the provided email already exists
     const existingUser = await User.findOne({ email });
-    console.log(existingUser)
+    console.log(existingUser);
     if (existingUser) {
       return res
         .status(409)
@@ -86,13 +86,13 @@ const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ status: false, error: "Invalid email" });
+      return res.json({ status: false, message: "Invalid email" });
     }
 
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.status(404).json({ status: false, error: "Invalid password" });
+      return res.json({ status: false, message: "Invalid password" });
     }
     // create token
     const token = createJwtToken(user._id);
@@ -100,7 +100,7 @@ const loginUser = async (req, res) => {
       .status(200)
       .json({ status: true, message: "logged in successfully", user, token });
   } catch (error) {
-    return res.status(500).json({ status: false, error: error.message });
+    return res.status(500).json({ status: false, message: error.message });
   }
 };
 
