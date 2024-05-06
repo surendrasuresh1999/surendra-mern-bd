@@ -1,5 +1,6 @@
 const blogModel = require("../Models/blogModel");
 const userModel = require("../Models/userModel");
+const commentsModel = require("../Models/commentsModel");
 const mongoose = require("mongoose");
 
 // get all blog posts
@@ -37,8 +38,13 @@ const getAllBlogPosts = async (req, res) => {
 const getBlogPostById = async (req, res) => {
   try {
     const blogPost = await blogModel.findById({ _id: req.params.id });
+    const comments = await commentsModel.find({ blogId: req.params.id });
+    for (let i = 0; i < comments.length; i++) {
+      const user = await userModel.findById(comments[i].userId.toString());
+      comments[i].userId = user;
+    }
     const user = await userModel.findById({ _id: blogPost.user });
-    const singlePost = { ...blogPost._doc, user: user.name };
+    const singlePost = { ...blogPost._doc, user: user.name, comments };
     res.json({
       status: 200,
       message: "Fetched blog post by id",
@@ -64,7 +70,7 @@ const createBlogPost = async (req, res) => {
       status: 200,
     });
   } catch (error) {
-    console.log("Error: ", error);
+    console.log("Error: ", error.message);
     res.json({ status: 400, message: error.message });
   }
 };
