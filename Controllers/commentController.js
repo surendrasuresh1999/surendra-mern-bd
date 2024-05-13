@@ -7,7 +7,7 @@ const createComment = async (req, res) => {
       userId: _id.toString(),
       ...req.body,
     });
-    console.log(resultedComment);
+    // console.log(resultedComment);
     res.json({
       message: "Comment created Successfully",
       resultedComment,
@@ -55,4 +55,63 @@ const deleteComment = async (req, res) => {
   }
 };
 
-module.exports = { createComment, deleteComment };
+const createLikeForComment = async (req, res) => {
+  const { _id } = req.user;
+  const { blogId, commentId } = req.params;
+  const { type } = req.body;
+
+  try {
+    const comment = await commentModal.findById({
+      _id: commentId,
+      blogId: blogId,
+    });
+    if (!comment) {
+      return res.json({ status: 404, message: "Comment not found" });
+    }
+
+    const isUserLiked = comment.likedUsers.includes(_id);
+    const isUserDisliked = comment.dislikedUsers.includes(_id);
+
+    if (type === "like") {
+      if (isUserLiked) {
+        comment.likedUsers.pull(_id); // Remove like
+        await comment.save();
+        return res.json({ status: 200, message: "You have removed your like" });
+      } else {
+        if (isUserDisliked) {
+          comment.dislikedUsers.pull(_id); // Remove dislike
+        }
+        comment.likedUsers.push(_id); // Add like
+        await comment.save();
+        return res.json({
+          status: 200,
+          message: "You have added your opinion",
+        });
+      }
+    } else {
+      if (isUserDisliked) {
+        comment.dislikedUsers.pull(_id); // Remove dislike
+        await comment.save();
+        return res.json({
+          status: 200,
+          message: "You have removed your dislike",
+        });
+      } else {
+        if (isUserLiked) {
+          comment.likedUsers.pull(_id); // Remove like
+        }
+        comment.dislikedUsers.push(_id); // Add dislike
+        await comment.save();
+        return res.json({
+          status: 200,
+          message: "You have added your opinion",
+        });
+      }
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    return res.json({ status: 400, message: error.message });
+  }
+};
+
+module.exports = { createComment, deleteComment, createLikeForComment };

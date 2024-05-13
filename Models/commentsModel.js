@@ -13,8 +13,8 @@ const commentSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    likeCount: { type: Number, default: 0 },
-    dislikeCount: { type: Number, default: 0 },
+    likedUsers: [],
+    dislikedUsers: [],
   },
   { timestamps: true }
 );

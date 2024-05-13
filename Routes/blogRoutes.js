@@ -5,6 +5,7 @@ const {
   createBlogPost,
   deleteBlogPost,
   getBlogPostById,
+  getUserBlogPosts,
 } = require("../Controllers/blogController");
 
 const requiredAuth = require("../Middleware/WorkoutsAuthentication");
@@ -16,8 +17,8 @@ router.use(requiredAuth);
 // GET all blog posts
 router.get("/", getAllBlogPosts);
 
-// GET specific blog post details
-// router.get("/:id", getProductById);
+// GET all User blogs
+router.get("/user", getUserBlogPosts);
 
 // create a new Blog post
 router.post("/", createBlogPost);

@@ -34,6 +34,29 @@ const getAllBlogPosts = async (req, res) => {
   }
 };
 
+// get blog posts based on userId
+const getUserBlogPosts = async (req, res) => {
+  const { _id } = req.user;
+
+  try {
+    // Fetch all users
+    const userObj = await userModel.findById({ _id });
+    // Fetch all blog posts
+    const blogPosts = await blogModel.find({ user: _id });
+    const populatedBlog = blogPosts.map((post) => {
+      return { ...post._doc, user: userObj.name };
+    });
+    res.json({
+      status: 200,
+      message: "Fetching all blogs",
+      posts: populatedBlog,
+    });
+  } catch (error) {
+    console.log("Error: ", error.message);
+    res.json({ status: 400, message: error.message });
+  }
+};
+
 // get all blog posts
 const getBlogPostById = async (req, res) => {
   try {
@@ -99,7 +122,7 @@ const deleteBlogPost = async (req, res) => {
 
     await blogModel.findByIdAndDelete(req.params.id);
 
-    res.json({ message: "Blog post deleted successfully", status: 200 });
+    res.json({ message: "Your blog post deleted successfully", status: 200 });
   } catch (error) {
     console.log("Error: ", error);
     res.json({ error: error.message, status: error.status });
@@ -111,4 +134,5 @@ module.exports = {
   createBlogPost,
   deleteBlogPost,
   getBlogPostById,
+  getUserBlogPosts,
 };

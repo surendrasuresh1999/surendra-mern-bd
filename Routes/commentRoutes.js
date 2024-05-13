@@ -1,5 +1,5 @@
 const express = require("express");
-const { createComment, deleteComment } = require("../Controllers/commentController");
+const { createComment, deleteComment, createLikeForComment } = require("../Controllers/commentController");
 
 const requiredAuth = require("../Middleware/WorkoutsAuthentication");
 const router = express.Router();
@@ -11,5 +11,8 @@ router.post("/", createComment);
 
 // create a new comment
 router.delete("/:commentId/:blogId", deleteComment);
+
+// update a comment for add a like 
+router.put("/:commentId/:blogId", createLikeForComment);
 
 module.exports = router;
