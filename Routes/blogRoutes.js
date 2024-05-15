@@ -6,6 +6,7 @@ const {
   deleteBlogPost,
   getBlogPostById,
   getUserBlogPosts,
+  dropLikeForPost,
 } = require("../Controllers/blogController");
 
 const requiredAuth = require("../Middleware/WorkoutsAuthentication");
@@ -28,5 +29,8 @@ router.delete("/:id", deleteBlogPost);
 
 // get blogPost by id
 router.get("/:id", getBlogPostById);
+
+// get blogPost by id
+router.put("/:id", dropLikeForPost);
 
 module.exports = router;

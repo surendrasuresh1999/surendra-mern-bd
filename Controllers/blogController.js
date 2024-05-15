@@ -129,10 +129,37 @@ const deleteBlogPost = async (req, res) => {
   }
 };
 
+const dropLikeForPost = async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const blogObj = await blogModel.findById({ _id: req.params.id });
+    if (!blogObj) {
+      return res.json({ status: 404, message: "Blog details not found" });
+    }
+    const isUserExist = blogObj.likedUsers.includes(_id);
+    if (isUserExist) {
+      blogObj.likedUsers.pull(_id); 
+      await blogObj.save();
+      return res.json({ status: 200, message: "You have removed your like" });
+    } else {
+      blogObj.likedUsers.push(_id);
+      await blogObj.save();
+      return res.json({
+        status: 200,
+        message: "You have added your opinion",
+      });
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    res.json({ error: error.message, status: error.status });
+  }
+};
+
 module.exports = {
   getAllBlogPosts,
   createBlogPost,
   deleteBlogPost,
   getBlogPostById,
   getUserBlogPosts,
+  dropLikeForPost,
 };
