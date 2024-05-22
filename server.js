@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const productRoute = require("./Routes/productsRoutes");
 const blogRoute = require("./Routes/blogRoutes");
+const quoteRoute = require("./Routes/quoteRoutes");
 const commentRoute = require("./Routes/commentRoutes");
 const userRoutes = require("./Routes/userRoutes");
 const cartRoutes = require("./Routes/cartRoutes");
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 // routes
 app.use("/api/products", productRoute);
 app.use("/api/blog", blogRoute);
+app.use("/api/quote", quoteRoute);
 app.use("/api/comments", commentRoute);
 app.use("/api/user", userRoutes);
 app.use("/api/user/cart", cartRoutes);
