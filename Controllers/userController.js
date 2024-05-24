@@ -1,5 +1,6 @@
 const User = require("../Models/userModel");
 const blogModel = require("../Models/blogModel");
+const quoteModel = require("../Models/quoteModel");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
@@ -33,7 +34,12 @@ const getUserInformation = async (req, res) => {
       return res.json({ status: 404, message: "User not found" });
     }
     const blogs = await blogModel.find({ user: userId });
-    return res.json({ status: 200, blogs: blogs.length });
+    const quotes = await quoteModel.find({ user: userId });
+    return res.json({
+      status: 200,
+      blogs: blogs.length,
+      quotes: quotes.length,
+    });
   } catch (error) {
     return res.json({ status: 400, error: error.message });
   }
