@@ -4,7 +4,6 @@ const quoteModel = require("../Models/quoteModel");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-const { createCartForEachUser } = require("./cartController");
 
 const createJwtToken = (userId) => {
   return jwt.sign({ _id: userId }, process.env.SECRET_STRING, {
@@ -17,7 +16,7 @@ const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}).sort({ createdAt: -1 });
     if (users.length < 0) {
-      return res.status(404).json({ error: "No users found" });
+      return res.json({ error: "No users found", status: false });
     }
     res.status(200).json(users);
   } catch (error) {
@@ -48,19 +47,12 @@ const getUserInformation = async (req, res) => {
 const createNewUser = async (req, res) => {
   const { name, email, password, phone } = req.body;
 
-  // Validate email format
-  // if (!validator.isEmail(email)) {
-  //   return res.status(400).json({ error: "Invalid email format" });
-  // }
-
   try {
     // Check if a user with the provided email already exists
     const existingUser = await User.findOne({ email });
     console.log(existingUser);
     if (existingUser) {
-      return res
-        .status(409)
-        .json({ status: false, message: "email already exists" });
+      return res.json({ status: false, message: "email already exists" });
     }
 
     // Hash the password
@@ -74,22 +66,14 @@ const createNewUser = async (req, res) => {
       phone,
     });
     const token = createJwtToken(newUser._id);
-    await createCartForEachUser(newUser._id);
-    res
-      .status(201)
-      .json({ status: true, message: "User created successfully", token });
+    res.json({ status: true, message: "User created successfully", token });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.json({ error: error.message, status: false });
   }
 };
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-
-  // Validate email format
-  if (!validator.isEmail(email)) {
-    return res.status(400).json({ error: "Invalid email format" });
-  }
 
   try {
     const user = await User.findOne({ email });
@@ -108,7 +92,7 @@ const loginUser = async (req, res) => {
       .status(200)
       .json({ status: true, message: "logged in successfully", user, token });
   } catch (error) {
-    return res.status(500).json({ status: false, message: error.message });
+    return res.json({ status: false, message: error.message });
   }
 };
 
