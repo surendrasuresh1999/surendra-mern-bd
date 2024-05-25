@@ -8,7 +8,7 @@ const {
   updateQuote,
 } = require("../Controllers/quotesController");
 
-const requiredAuth = require("../Middleware/WorkoutsAuthentication");
+const requiredAuth = require("../Middleware/UserAuthentication");
 
 const router = express.Router();
 

@@ -9,7 +9,7 @@ const {
   dropLikeForPost,
 } = require("../Controllers/blogController");
 
-const requiredAuth = require("../Middleware/WorkoutsAuthentication");
+const requiredAuth = require("../Middleware/UserAuthentication");
 
 const router = express.Router();
 
