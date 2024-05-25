@@ -96,4 +96,31 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, createNewUser, loginUser, getUserInformation };
+const forgotPassword = async (req, res) => {
+  const { email, password, confirmPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({ status: false, message: "User doesn't exist" });
+    }
+    const hashedPassword = await bcrypt.hash(confirmPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+    return res.json({
+      status: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    return res.json({ status: false, message: error.message });
+  }
+};
+
+module.exports = {
+  getAllUsers,
+  createNewUser,
+  loginUser,
+  getUserInformation,
+  forgotPassword,
+};
