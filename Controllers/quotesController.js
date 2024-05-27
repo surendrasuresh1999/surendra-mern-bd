@@ -116,9 +116,13 @@ const updateQuote = async (req, res) => {
         status: 403,
       });
     }
-    const { author, quote } = req.body;
+    const { author, quote, categoryTag } = req.body;
 
-    await quoteModel.findByIdAndUpdate(req.params.id, { author, quote });
+    await quoteModel.findByIdAndUpdate(req.params.id, {
+      author,
+      quote,
+      categoryTag,
+    });
 
     res.json({ message: "Your quote updated successfully", status: 200 });
   } catch (error) {

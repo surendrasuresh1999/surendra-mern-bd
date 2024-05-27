@@ -14,6 +14,10 @@ const quoteSchema = new Schema(
       required: true,
     },
     likedUsers: [],
+    categoryTag: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
