@@ -45,7 +45,7 @@ const getUserInformation = async (req, res) => {
 };
 
 const createNewUser = async (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     // Check if a user with the provided email already exists
@@ -63,7 +63,6 @@ const createNewUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      phone,
     });
     const token = createJwtToken(newUser._id);
     res.json({ status: true, message: "User created successfully", token });
