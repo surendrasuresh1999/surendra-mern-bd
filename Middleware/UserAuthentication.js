@@ -17,7 +17,7 @@ const verifyJwtToken = async (req, res, next) => {
     // Proceed to the next middleware
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Request is not autherized" });
+    return res.json({ message: err.message, status: 401 });
   }
 };
 
